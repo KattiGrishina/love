@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Для тебя ❤️</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Marck Script', cursive;
+            touch-action: manipulation;
+        }
+
+        #ui-wrapper {
+            position: relative;
+            z-index: 30;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* Адаптивная кнопка */
+        #startBtn {
+            padding: 15px 30px;
+            font-size: clamp(1.2rem, 5vw, 1.8rem);
+            background: transparent;
+            color: #ff0055;
+            border: 2px solid #ff0055;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Marck Script', cursive;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px #ff0055;
+            text-shadow: 0 0 5px #ff0055;
+        }
+
+        /* Текст внутри сердца */
+        #loveText {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            color: #fff;
+            /* Динамический размер шрифта: на малых экранах меньше, на больших больше */
+            font-size: clamp(1.5rem, 6vw, 2.8rem);
+            text-align: center;
+            width: 85vw;
+            max-width: 600px;
+            transition: opacity 1s ease;
+            text-shadow: 0 0 10px #ff0055, 0 0 20px #ff0055;
+            pointer-events: none;
+            z-index: 20;
+            line-height: 1.3;
+        }
+
+        .neon-heart {
+            position: absolute;
+            color: #ff0055;
+            pointer-events: none;
+            text-shadow: 0 0 10px #ff0055;
+            z-index: 10;
+            user-select: none;
+            will-change: transform, left, top; /* Оптимизация для мобилок */
+        }
+
+        /* Планшеты и десктоп */
+        @media (min-width: 768px) {
+            #startBtn { padding: 20px 45px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ui-wrapper">
+        <button id="startBtn">Нажми сюда </button>
+    </div>
+
+    <div id="loveText"></div>
+
+    <script>
+        const btn = document.getElementById('startBtn');
+        const textContainer = document.getElementById('loveText');
+
+        const phrases = [
+            "Купи тональник мне АХХАХАХ",
+            "А если серьезно...",
+            "Ты — моё самое любимое чудо"
+        ];
+
+        btn.addEventListener('click', () => {
+            btn.style.opacity = '0';
+            setTimeout(() => btn.style.display = 'none', 500);
+
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            
+            // Умный расчет размера сердца: 
+            // Берем минимальную сторону экрана и делим на коэффициент
+            const screenMin = Math.min(window.innerWidth, window.innerHeight);
+            const scale = screenMin / 35; // Универсальный масштаб для любого экрана
+            
+            const count = window.innerWidth < 480 ? 40 : 60;
+
+            for (let i = 0; i < count; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'neon-heart';
+                heart.innerHTML = '❤';
+                document.body.appendChild(heart);
+
+                heart.style.left = centerX + 'px';
+                heart.style.top = centerY + 'px';
+                heart.style.fontSize = '0px';
+
+                const t = (i / count) * 2 * Math.PI;
+                const x = 16 * Math.pow(Math.sin(t), 3);
+                const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+
+                setTimeout(() => {
+                    heart.style.transition = "all 2s cubic-bezier(0.19, 1, 0.22, 1)";
+                    heart.style.left = (centerX + x * scale) + 'px';
+                    heart.style.top = (centerY + y * scale) + 'px';
+                    heart.style.fontSize = (scale * 1.2) + 'px'; // Размер частиц зависит от масштаба
+                }, i * 20);
+            }
+
+            // Вывод текста
+            setTimeout(() => {
+                showText(0);
+                setTimeout(() => showText(1), 4000);
+                setTimeout(() => showText(2), 8000);
+            }, 1500);
+        });
+
+        function showText(index) {
+            textContainer.style.opacity = '0';
+            setTimeout(() => {
+                textContainer.innerText = phrases[index];
+                textContainer.style.opacity = '1';
+                if(index === 2) {
+                    textContainer.style.color = '#ffccd5';
+                    textContainer.style.textShadow = "0 0 20px #ff0055, 0 0 40px #ff0055";
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
